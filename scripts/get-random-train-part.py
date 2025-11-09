@@ -2,11 +2,12 @@ import os
 import json
 import math
 import random
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from components.coordinate.Coordinate import Coordinate
 from components.coordinate.State import State
-from components.config.Config import Config
+from components.config.TrainConfig import TrainConfig
 from components.command.CommandTransformer import CommandTransformer
 from components.coordinate.CoordinateTransformer import CoordinateTransformer
 from components.part.PartTransformer import PartTransformer
@@ -31,7 +32,8 @@ def getRandomTrainPart(path: str) -> list[Coordinate]:
             state=State(
                 yaw=item['yaw'],
                 steering=item['steering'],
-                speed=item['speed'],
+                vSpeed=item['v_speed'],
+                wSpeed=item['w_speed'],
             ),
         ))
 
@@ -56,9 +58,10 @@ def addPlot(course: list[Coordinate], ax: any) -> None:
 
             x: float = oldCoordinate.x  # [m]
             y: float = oldCoordinate.y  # [m]
-            yaw: float = math.radians(oldCoordinate.state.yaw)  # [rad]
-            steering: float = math.radians(oldCoordinate.state.steering)  # [rad]
-            speed: float = oldCoordinate.state.speed  # [m/s]
+            yaw: float = oldCoordinate.state.yaw  # [rad]
+            steering: float = oldCoordinate.state.steering  # [rad]
+            vSpeed: float = oldCoordinate.state.vSpeed  # [m/s]
+            wSpeed: float = oldCoordinate.state.wSpeed  # [rad/s]
             duration: float = 0.01  # [s]
             j: int = 0
 
@@ -66,10 +69,11 @@ def addPlot(course: list[Coordinate], ax: any) -> None:
                 pointsX.append(x)
                 pointsY.append(y)
 
-                x += speed * math.cos(yaw) * duration  # [m]
-                y += speed * math.sin(yaw) * duration  # [m]
-                yaw += math.tan(steering) * (speed / Config.LENGTH) * duration  # [rad]
+                x += vSpeed * math.sin(yaw) * duration  # [m]
+                y += vSpeed * math.cos(yaw) * duration  # [m]
+                yaw += wSpeed * duration  # [rad]
                 yaw: float = normalizeAngle(yaw)  # [rad]
+                wSpeed += (TrainConfig.K_COEFFICIENT * steering - wSpeed - TrainConfig.C_COEFFICIENT * wSpeed * abs(wSpeed)) / TrainConfig.T_COEFFICIENT * duration  # [rad/s]
                 j += 1
 
                 if distanceBetweenPoints([Coordinate(x, y), newCoordinate]) <= 0.02:  # [m]
@@ -88,7 +92,7 @@ def addPlot(course: list[Coordinate], ax: any) -> None:
             ax.text(
                 x=(pointsX[-high] + pointsX[-low]) / 2,
                 y=(pointsY[-high] + pointsY[-low]) / 2,
-                s=f'{oldCoordinate.state.speed} m/s',
+                s=f'{oldCoordinate.state.vSpeed} m/s',
                 fontsize=10,
                 color='black',
             )
@@ -116,10 +120,12 @@ def printTrainPart(course: list[Coordinate], ax: any) -> None:
     items: list = trainHelper.createItems(course=course)
     trainX, trainSteeringY, trainSpeedY = trainHelper.presentItems(items=items)
 
-    df = pd.DataFrame(data=trainX, columns=['length 1', 'length 2', 'angle', 'yaw'])
+    df = pd.DataFrame(data=trainX, columns=['length 1 [m]', 'length 2 [m]', 'angle [deg]', 'yaw [deg]', 'w speed [rad/s]'])
     df.insert(0, '№', [str(i) for i in range(1, len(df) + 1)])  # noqa
-    df['output steering'] = [item[0] for item in trainSteeringY]
-    df['output speed'] = [item[0] for item in trainSpeedY]
+    df['angle [deg]'] = np.degrees(df['angle [deg]'])
+    df['yaw [deg]'] = np.degrees(df['yaw [deg]'])
+    df['output steering [deg]'] = [math.degrees(item[0]) for item in trainSteeringY]
+    df['output v speed [m/s]'] = [item[0] for item in trainSpeedY]
     df = df.round(2)
     ax.axis('off')
     table = ax.table(cellText=df.values, colLabels=df.columns, loc='center')
@@ -141,6 +147,7 @@ def main() -> None:
     addPlot(course=coordinates, ax=ax1)
     printTrainPart(course=coordinates, ax=ax2)
     plt.show()
+    plt.savefig('random-train-part.png', bbox_inches='tight', dpi=300)
 
 
 if __name__ == '__main__':

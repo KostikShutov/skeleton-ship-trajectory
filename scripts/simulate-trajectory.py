@@ -2,7 +2,7 @@ import os
 import json
 import matplotlib.pyplot as plt
 from collections.abc import Iterable
-from components.config.Config import Config
+from components.config.TrainConfig import TrainConfig
 from components.coordinate.Coordinate import Coordinate
 from helpers.Utility import parseArgs
 from json.decoder import JSONDecodeError
@@ -59,7 +59,7 @@ def addPredictedPlot(path: str, warm: bool) -> None:
 
         pointsX.append(coordinate.x)
         pointsY.append(coordinate.y)
-        currentSpeed: float = item['speed']
+        currentSpeed: float = item['v_speed']
 
         if warm and len(speed) > 0:
             lastSpeed: float = speed[-1]
@@ -74,7 +74,7 @@ def addPredictedPlot(path: str, warm: bool) -> None:
         speed.append(currentSpeed)
 
     if warm:
-        plt.scatter(pointsX, pointsY, c=speed, cmap='Wistia', s=15, vmin=Config.MIN_SPEED, vmax=Config.MAX_SPEED)
+        plt.scatter(pointsX, pointsY, c=speed, cmap='Wistia', s=15, vmin=TrainConfig.V_SPEED, vmax=TrainConfig.V_SPEED)
         plt.plot(pointsX, pointsY, c='black', alpha=0.3)
         plt.colorbar(label='Скорость')
     else:
@@ -85,7 +85,7 @@ def addPredictedPlot(path: str, warm: bool) -> None:
         y = item['y']
 
         try:
-            speed = round(item['speed'], 2)
+            speed = round(item['v_speed'], 2)
         except KeyError:
             return
 
@@ -99,6 +99,7 @@ def showPlot() -> None:
     plt.grid(True)
     plt.axis('equal')
     plt.show()
+    plt.savefig('simulate.png', bbox_inches='tight', dpi=300)
 
 
 def main() -> None:

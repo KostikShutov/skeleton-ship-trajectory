@@ -1,8 +1,8 @@
 services:
-  python-trajectory:
+  python-ship-trajectory:
     build: .
-    image: python-trajectory
-    container_name: python-trajectory-container
+    image: python-ship-trajectory
+    container_name: python-ship-trajectory-container
     tty: true
     privileged: true
     volumes:

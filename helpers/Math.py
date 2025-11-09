@@ -2,25 +2,22 @@ import math
 from components.coordinate.Coordinate import Coordinate
 
 
-def distanceBetweenPoints(coordinates: list[Coordinate]) -> float:
-    distance: float = 0.0
+def distanceBetweenPoints(coordinates: list[Coordinate]) -> float:  # [m]
+    distance: float = 0.0  # [m]
 
     for i in range(len(coordinates) - 1):
         c1: Coordinate = coordinates[i]
         c2: Coordinate = coordinates[i + 1]
-        distance += math.sqrt((c2.x - c1.x) ** 2 + (c2.y - c1.y) ** 2)
+        distance += math.sqrt((c2.x - c1.x) ** 2 + (c2.y - c1.y) ** 2)  # [m]
 
-    return distance
-
-
-def angleBetweenVectorAndX(first: Coordinate, second: Coordinate) -> float:
-    return math.atan2(
-        second.y - first.y,
-        second.x - first.x,
-    )
+    return distance  # [m]
 
 
-def rotatePoints(coordinates: list[Coordinate]) -> tuple[list[Coordinate], float]:
+def angleBetweenVectorAndX(first: Coordinate, second: Coordinate) -> float:  # [rad]
+    return math.atan2(second.y - first.y, second.x - first.x)  # [rad]
+
+
+def rotatePoints(coordinates: list[Coordinate]) -> tuple[list[Coordinate], float]:  # [rad]
     if len(coordinates) <= 1:
         raise ValueError('Must provide >= 2 coordinates')
 
@@ -37,10 +34,10 @@ def rotatePoints(coordinates: list[Coordinate]) -> tuple[list[Coordinate], float
             y=coordinate.x * math.sin(angle) + coordinate.y * math.cos(angle),
         ))
 
-    return result, math.degrees(angle)  # [deg]
+    return result, angle  # [rad]
 
 
-def normalizeAngle(angle: float) -> float:
+def normalizeAngle(angle: float) -> float:  # [rad]
     while angle > math.pi:
         angle -= 2.0 * math.pi
 

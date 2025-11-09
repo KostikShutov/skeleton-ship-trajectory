@@ -1,27 +1,35 @@
 import os
 import json
+import math
 import numpy as np
 import matplotlib.pyplot as plt
 from collections.abc import Iterable
 from helpers.Utility import parseArgs
+from components.config.TrainConfig import TrainConfig
 
 
 def addSteerings(steerings: dict) -> None:
     plt.figure()
-    plt.xticks(ticks=np.arange(-45, 46, 1), rotation=90, fontsize=8)
+    plt.xticks(ticks=np.arange(int(round(math.degrees(TrainConfig.MIN_STEERING), 0)),
+                               int(round(math.degrees(TrainConfig.MAX_STEERING), 0)) + 1,
+                               1),
+               rotation=90,
+               fontsize=8)
     plt.bar(x=steerings.keys(), height=steerings.values())  # noqa
-    plt.title('Распределение угла поворота рулевого колеса')
-    plt.xlabel('Значение')
+    plt.title('Распределение угла поворота пера руля')
+    plt.xlabel('Значение [deg]')
     plt.ylabel('Количество')
+    plt.savefig('distribution-picture-steerings.png', bbox_inches='tight', dpi=300)
 
 
 def addSpeeds(speeds: dict) -> None:
     plt.figure()
-    plt.xticks(ticks=np.arange(0.1, 0.55, 0.05))
-    plt.bar(x=speeds.keys(), height=speeds.values(), width=0.03)  # noqa
+    plt.xticks(ticks=[TrainConfig.V_SPEED])
+    plt.bar(x=speeds.keys(), height=speeds.values())  # noqa
     plt.title('Распределение скорости движения')
-    plt.xlabel('Значение')
+    plt.xlabel('Значение [m/s]')
     plt.ylabel('Количество')
+    plt.savefig('distribution-picture-speeds.png', bbox_inches='tight', dpi=300)
 
 
 def distribute(path: str) -> None:
@@ -32,10 +40,10 @@ def distribute(path: str) -> None:
     speeds: dict = {}
 
     for item in items:
-        steering: int = int(round(item['steering'], 0))
+        steering: int = int(round(math.degrees(item['steering']), 0))
         steerings[steering] = steerings.get(steering, 0) + 1
 
-        speed: float = float(round(item['speed'], 2))
+        speed: float = float(round(item['v_speed'], 2))
         speeds[speed] = speeds.get(speed, 0) + 1
 
     addSteerings(steerings)

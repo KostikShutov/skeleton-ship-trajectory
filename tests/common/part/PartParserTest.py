@@ -15,12 +15,14 @@ class PartParserTest(unittest.TestCase):
         actualPart, actualModelName = self.partParser.parse({
             'coordinates': [],
             'yaw': 33.5,
+            'w_speed': 45.6,
         })
         self.assertEqual(Part(
             coordinates=[],
             yaw=33.5,
+            wSpeed=45.6,
         ), actualPart)
-        self.assertEqual('static_smoothly', actualModelName)
+        self.assertEqual('ship', actualModelName)
 
         actualPart, actualModelName = self.partParser.parse({
             'coordinates': [
@@ -28,7 +30,8 @@ class PartParserTest(unittest.TestCase):
                 {'x': 5.6, 'y': 7.8},
             ],
             'yaw': 33.5,
-            'model': 'static_aggressive',
+            'w_speed': 45.6,
+            'model': 'undefined',
         })
         self.assertEqual(Part(
             coordinates=[
@@ -36,5 +39,6 @@ class PartParserTest(unittest.TestCase):
                 Coordinate(x=5.6, y=7.8),
             ],
             yaw=33.5,
+            wSpeed=45.6,
         ), actualPart)
-        self.assertEqual('static_aggressive', actualModelName)
+        self.assertEqual('undefined', actualModelName)

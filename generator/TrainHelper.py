@@ -29,11 +29,12 @@ class TrainHelper:
             part: Part = self.partTransformer.normalizeToZero(Part(
                 coordinates=fragment,
                 yaw=state.yaw,
+                wSpeed=state.wSpeed,
             ))
 
             command: Command = Command(
                 steering=state.steering,
-                speed=state.speed,
+                vSpeed=state.vSpeed,
             )
 
             result.append((part, command))
@@ -48,6 +49,6 @@ class TrainHelper:
         for part, command in tqdm(items, desc='Presenting training items'):
             trainX.append(self.partTransformer.presentForInput(part))
             trainSteeringY.append([command.steering])
-            trainSpeedY.append([command.speed])
+            trainSpeedY.append([command.vSpeed])
 
         return trainX, trainSteeringY, trainSpeedY

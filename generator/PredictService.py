@@ -2,7 +2,7 @@ import pickle
 import tensorflow as tf
 from tf_keras.models import model_from_json, Sequential
 from sklearn.preprocessing import MinMaxScaler
-from components.config.Config import Config
+from components.config.TrainConfig import TrainConfig
 from components.coordinate.CoordinateTransformer import CoordinateTransformer
 from components.command.Command import Command
 from components.part.Part import Part
@@ -21,22 +21,23 @@ class PredictService:
 
         return {
             'steering': command.steering,
-            'speed': command.speed,
+            'v_speed': command.vSpeed,
         }
 
     def __getCommand(self, part: Part, modelDirectory: str) -> Command:
         steering: float = self.__doPredict(part, modelDirectory + 'steering/')
-        speed: float = self.__doPredict(part, modelDirectory + 'speed/')
+        vSpeed: float = self.__doPredict(part, modelDirectory + 'speed/')
 
         return Command(
-            steering=max(Config.MIN_STEERING, min(Config.MAX_STEERING, steering)),
-            speed=max(Config.MIN_SPEED, min(speed, Config.MAX_SPEED)),
+            steering=max(TrainConfig.MIN_STEERING, min(TrainConfig.MAX_STEERING, steering)),
+            vSpeed=max(TrainConfig.V_SPEED, min(vSpeed, TrainConfig.V_SPEED)),
         )
 
     def __doPredict(self, part: Part, modelDirectory: str) -> float:
         part: Part = self.partTransformer.normalizeToZero(Part(
             coordinates=part.coordinates,
             yaw=part.yaw,
+            wSpeed=part.wSpeed,
         ))
 
         with open(modelDirectory + 'x_scaler.pickle', 'rb') as file:

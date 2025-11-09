@@ -11,8 +11,9 @@ class PartParser:
         part: Part = Part(
             coordinates=self.coordinateParser.parse(data['coordinates']),
             yaw=float(data['yaw']),
+            wSpeed=float(data['w_speed']),
         )
 
-        modelName: ModelName = ModelName(str(data['model'])) if 'model' in data else ModelName.STATIC_SMOOTHLY
+        modelName: ModelName = ModelName(str(data['model'])) if 'model' in data else ModelName.SHIP
 
         return part, modelName.value

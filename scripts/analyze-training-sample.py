@@ -1,5 +1,6 @@
 import os
 import json
+import math
 from tqdm import tqdm
 from collections import Counter
 from collections.abc import Iterable
@@ -39,22 +40,26 @@ def analyzeTrainingSample(trainX: list[list[float]],
     analysisSpeed: dict = defaultdict(list)
 
     for listX, listSteeringY, listSpeedY in zip(trainX, trainSteeringY, trainSpeedY):
-        keyX: str = '_'.join([str(round(x, 2)) for x in listX])
+        keyX: str = "%.3f_%.3f_%.1f_%.1f_%.3f" % (round(listX[0], 3), round(listX[1], 3), round(math.degrees(listX[2]), 1), round(math.degrees(listX[3]), 1), round(listX[4], 3))
         analysisSteering[keyX].append(listSteeringY)
         analysisSpeed[keyX].append(listSpeedY)
 
-    doAnalysis(analysis=analysisSteering, name='steering')
-    doAnalysis(analysis=analysisSpeed, name='speed')
+    doAnalysis(analysis=analysisSteering, name='steering', isSteering=True)
+    doAnalysis(analysis=analysisSpeed, name='speed', isSteering=False)
 
 
-def doAnalysis(analysis: dict, name: str) -> None:
+def doAnalysis(analysis: dict, name: str, isSteering: bool) -> None:
     emptyMessage: bool = True
 
     for keyX, listsY in tqdm(analysis.items(), desc='Analyzing ' + name + ' training sample'):
         keysY: list = []
 
         for listY in listsY:
-            keyY: str = '_'.join([str(round(y, 2)) for y in listY])
+            if isSteering:
+                keyY: str = "%.1f" % round(math.degrees(listY[0]), 1)
+            else:
+                keyY: str = "%.3f" % round(listY[0], 3)
+
             keysY.append(keyY)
 
         counter: Counter = Counter(keysY)

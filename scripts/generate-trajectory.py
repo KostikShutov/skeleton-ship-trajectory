@@ -2,7 +2,7 @@ import os
 import math
 import json
 from tqdm import tqdm
-from components.config.Config import Config
+from components.config.TrainConfig import TrainConfig
 from components.model.ModelName import ModelName
 from components.model.StrategyInterface import StrategyInterface
 from components.model.StrategyResolver import StrategyResolver
@@ -11,39 +11,40 @@ from helpers.Math import normalizeAngle
 
 
 def generateTrajectory(strategy: StrategyInterface, number: int) -> list[object]:
-    x: float = 0.0  # [m]
-    y: float = 0.0  # [m]
-    length: float = Config.LENGTH  # [m]
-    yaw: float = math.radians(0.0)  # [rad]
-    steering: float = strategy.generateSteering()  # [rad]
-    speed: float = strategy.generateSpeed(steering=steering)  # [m/s]
-    points: int = strategy.generatePoints(speed=speed)
+    x: float = TrainConfig.X  # [m]
+    y: float = TrainConfig.Y  # [m]
+    yaw: float = TrainConfig.YAW  # [rad]
+    steering: float = TrainConfig.STEERING  # [rad]
+    vSpeed: float = TrainConfig.V_SPEED  # [m/s]
+    wSpeed: float = TrainConfig.W_SPEED  # [rad/s]
+    points: int = strategy.generatePoints()
     result: list[object] = [{
         'x': x,
         'y': y,
-        'yaw': math.degrees(yaw),
-        'steering': math.degrees(steering),
-        'speed': speed,
+        'yaw': yaw,
+        'steering': steering,
+        'v_speed': vSpeed,
+        'w_speed': wSpeed,
     }]
 
     for _ in tqdm(range(number), desc='Generating trajectory'):
         for _ in range(points):
-            x += speed * math.cos(yaw) * Config.DURATION  # [m]
-            y += speed * math.sin(yaw) * Config.DURATION  # [m]
-            yaw += math.tan(steering) * (speed / length) * Config.DURATION  # [rad]
+            x += vSpeed * math.sin(yaw) * TrainConfig.DURATION  # [m]
+            y += vSpeed * math.cos(yaw) * TrainConfig.DURATION  # [m]
+            yaw += wSpeed * TrainConfig.DURATION  # [rad]
             yaw: float = normalizeAngle(yaw)  # [rad]
+            wSpeed += (TrainConfig.K_COEFFICIENT * steering - wSpeed - TrainConfig.C_COEFFICIENT * wSpeed * abs(wSpeed)) / TrainConfig.T_COEFFICIENT * TrainConfig.DURATION  # [rad/s]
 
-        x, y = strategy.modifyCoordinate(x=x, y=y, yaw=yaw, speed=speed)
-        steering: float = strategy.generateSteering()  # [rad]
-        speed: float = strategy.generateSpeed(steering=steering)  # [m/s]
-        points: int = strategy.generatePoints(speed=speed)
+        steering: float = strategy.generateSteering(steering)  # [rad]
+        points: int = strategy.generatePoints()
 
         result.append({
             'x': x,
             'y': y,
-            'yaw': math.degrees(yaw),
-            'steering': math.degrees(steering),
-            'speed': speed,
+            'yaw': yaw,
+            'steering': steering,
+            'v_speed': vSpeed,
+            'w_speed': wSpeed,
         })
 
     return result

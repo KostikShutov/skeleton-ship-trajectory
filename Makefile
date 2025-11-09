@@ -16,7 +16,7 @@ d-restart:
 
 .PHONY: d-python
 d-python:
-	docker compose exec python-trajectory bash
+	docker compose exec python-ship-trajectory bash
 
 ##############
 # Trajectory #
@@ -24,16 +24,16 @@ d-python:
 
 .PHONY: server
 server:
-	docker compose run --rm -p 3001:5000 -w /code python-trajectory python server.py
+	docker compose run --rm -p 3001:5000 -w /code python-ship-trajectory python server.py
 
 .PHONY: train
 train:
-	docker compose run --rm -w /code python-trajectory python train.py
+	docker compose run --rm -w /code python-ship-trajectory python train.py
 
 .PHONY: tensorboard
 tensorboard:
-	docker compose run --rm -p 3002:6006 -w /code python-trajectory tensorboard --logdir tensorboard --bind_all
+	docker compose run --rm -p 3002:6006 -w /code python-ship-trajectory tensorboard --logdir tensorboard --bind_all
 
 .PHONY: tests
 tests:
-	docker compose run --rm -w /code python-trajectory python -m unittest discover . "*Test.py"
+	docker compose run --rm -w /code python-ship-trajectory python -m unittest discover . "*Test.py"

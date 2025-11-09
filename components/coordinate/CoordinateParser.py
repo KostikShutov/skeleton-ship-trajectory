@@ -8,11 +8,12 @@ class CoordinateParser:
         coordinates: list[Coordinate] = []
 
         for item in data:
-            if 'yaw' in item and 'steering' in item and 'speed' in item:
+            if 'yaw' in item and 'steering' in item and 'v_speed' in item and 'w_speed' in item:
                 state: State = State(
                     yaw=float(item['yaw']),
                     steering=float(item['steering']),
-                    speed=float(item['speed']),
+                    vSpeed=float(item['v_speed']),
+                    wSpeed=float(item['w_speed']),
                 )
             else:
                 state: None = None

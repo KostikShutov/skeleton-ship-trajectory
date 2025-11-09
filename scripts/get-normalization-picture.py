@@ -94,6 +94,7 @@ def main() -> None:
     remove(normalized=coordinates, subplot=axs[3])
 
     plt.show()
+    plt.savefig('normalization-picture.png', bbox_inches='tight', dpi=300)
 
 
 if __name__ == '__main__':

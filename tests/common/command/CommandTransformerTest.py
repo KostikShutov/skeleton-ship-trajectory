@@ -9,7 +9,7 @@ class CommandTransformerTest(unittest.TestCase):
 
     def testPresentForOutput(self) -> None:
         actual: list[float] = self.commandTransformer.presentForOutput(
-            Command(steering=1.2, speed=3.4),
+            Command(steering=1.2, vSpeed=3.4),
         )
         self.assertEqual([1.2, 3.4], actual)
 

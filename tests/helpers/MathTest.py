@@ -57,7 +57,7 @@ class MathTest(unittest.TestCase):
             Coordinate(x=0, y=0),
             Coordinate(x=1, y=0),
         ], actualCoordinates)
-        self.assertEqual(-90, actualAngle)
+        self.assertEqual(-1.5707963267948966, actualAngle)
 
         actualCoordinates, actualAngle = rotatePoints([
             Coordinate(x=0, y=0),
@@ -69,7 +69,7 @@ class MathTest(unittest.TestCase):
             Coordinate(x=10, y=0),
             Coordinate(x=10, y=10),
         ], actualCoordinates)
-        self.assertEqual(-90, actualAngle)
+        self.assertEqual(-1.5707963267948966, actualAngle)
 
         actualCoordinates, actualAngle = rotatePoints([
             Coordinate(x=0, y=0),
@@ -81,7 +81,7 @@ class MathTest(unittest.TestCase):
             Coordinate(x=10, y=0),
             Coordinate(x=10, y=-10),
         ], actualCoordinates)
-        self.assertEqual(90, actualAngle)
+        self.assertEqual(1.5707963267948966, actualAngle)
 
         actualCoordinates, actualAngle = rotatePoints([
             Coordinate(x=0, y=0),
@@ -93,7 +93,7 @@ class MathTest(unittest.TestCase):
             Coordinate(x=12.1655250606, y=0.0),
             Coordinate(x=17.611734712, y=-1.1185707096),
         ], actualCoordinates)
-        self.assertEqual(-62.592424562181606, actualAngle)
+        self.assertEqual(-1.0924438954162392, actualAngle)
 
         actualCoordinates, actualAngle = rotatePoints([
             Coordinate(x=0, y=0),
@@ -105,7 +105,7 @@ class MathTest(unittest.TestCase):
             Coordinate(x=5, y=0),
             Coordinate(x=10, y=0),
         ], actualCoordinates)
-        self.assertEqual(-180, actualAngle)
+        self.assertEqual(-3.141592653589793, actualAngle)
 
     def testNormalizeAngle(self) -> None:
         actual: float = normalizeAngle(math.radians(-190))

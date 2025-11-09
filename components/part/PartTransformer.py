@@ -18,8 +18,9 @@ class PartTransformer:
         return [
             coordinates[0].x,
             round(distanceBetweenPoints(coordinates=coordinates), 10),
-            round(math.degrees(angleBetweenVectorAndX(first=coordinates[0], second=coordinates[1])), 10),
+            round(angleBetweenVectorAndX(first=coordinates[0], second=coordinates[1]), 10),
             part.yaw,
+            part.wSpeed,
         ]
 
     def normalizeToZero(self, part: Part) -> Part:
@@ -41,5 +42,6 @@ class PartTransformer:
 
         return Part(
             coordinates=removeFirst(normalized),
-            yaw=math.degrees(normalizeAngle(math.radians(part.yaw + deltaAngle)))
+            yaw=normalizeAngle(part.yaw + deltaAngle),
+            wSpeed=part.wSpeed,
         )
