@@ -1,0 +1,12 @@
+services:
+  python-trajectory:
+    build: .
+    image: python-trajectory
+    container_name: python-trajectory-container
+    tty: true
+    privileged: true
+    volumes:
+      - ".:/code"
+    working_dir: /code
+    environment:
+      PYTHONPATH: /code
